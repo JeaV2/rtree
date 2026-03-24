@@ -1,6 +1,7 @@
 [package]
 name = "rtree"
 version = "0.0.1"
+description = "A Directory listing program written in Rust, inspired by the Unix `tree` command."
 edition = "2024"
 readme = "README.md"
 license = "Apache-2.0"
