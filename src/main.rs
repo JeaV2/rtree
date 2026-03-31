@@ -1,4 +1,5 @@
 use clap::Parser;
+use std::collections::HashSet;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -18,7 +19,23 @@ struct Args {
     show_hidden: bool,
 }
 
-fn visit_dir(path: &Path, prefix: &str, _is_last: bool, arguments: &Args) -> io::Result<()> {
+fn visit_dir(
+    path: &Path,
+    prefix: &str,
+    _is_last: bool,
+    arguments: &Args,
+    visited: &mut HashSet<PathBuf>,
+) -> io::Result<()> {
+    // Canonicalize and check if already visited
+    let canonical_path = match fs::canonicalize(path) {
+        Ok(p) => p,
+        Err(_) => return Ok(()),
+    };
+    if visited.contains(&canonical_path) {
+        return Ok(());
+    }
+    visited.insert(canonical_path);
+
     // Read the directory entries and filter them based on the arguments
     let entries: Vec<_> = fs::read_dir(path)?
         .filter_map(|e| e.ok())
@@ -50,7 +67,7 @@ fn visit_dir(path: &Path, prefix: &str, _is_last: bool, arguments: &Args) -> io:
         if entry_path.is_dir() && fs::read_dir(&entry_path).is_ok() {
             unsafe { DIRS += 1 };
             let new_prefix = format!("{}{}", prefix, next_prefix);
-            visit_dir(&entry_path, &new_prefix, is_last_entry, arguments)?;
+            visit_dir(&entry_path, &new_prefix, is_last_entry, arguments, visited)?;
         } else if entry_path.is_file() {
             unsafe { FILES += 1 };
         }
@@ -61,7 +78,8 @@ fn visit_dir(path: &Path, prefix: &str, _is_last: bool, arguments: &Args) -> io:
 fn main() -> io::Result<()> {
     let args = Args::parse();
     println!("{}:", args.path.display());
-    visit_dir(Path::new(&args.path), "", true, &args)?;
+    let mut visited = HashSet::new();
+    visit_dir(Path::new(&args.path), "", true, &args, &mut visited)?;
     println!("\n{} directories, {} files", unsafe { DIRS }, unsafe {
         FILES
     });
