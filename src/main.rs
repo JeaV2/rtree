@@ -12,15 +12,32 @@ static mut DIRS: usize = 0;
 #[derive(Parser)]
 #[command(version = config::LONG_VERSION, about, long_about = None)]
 struct Args {
-    /// Root path to display as a tree.
-    #[arg(value_name = "PATH")]
+    #[arg(
+        value_name = "PATH",
+        default_value = ".",
+        help = "The directory path to display"
+    )]
     path: PathBuf,
-    /// Include hidden files and directories.
+
     #[arg(short, long, help = "Include hidden files and directories")]
     show_hidden: bool,
-    /// Show only directories.
+
     #[arg(short, long, help = "Show only directories")]
     only_dirs: bool,
+
+    #[arg(
+        short,
+        long,
+        help = "Set directory color (e.g., \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"magenta/purple\", \"cyan\", \"white\")"
+    )]
+    dir_color: Option<String>,
+
+    #[arg(
+        short,
+        long,
+        help = "Set file color (e.g., \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"magenta/purple\", \"cyan\", \"white\")"
+    )]
+    file_color: Option<String>,
 }
 
 fn visit_dir(
@@ -57,6 +74,17 @@ fn visit_dir(
         // Determine if this is the last entry in the directory
         let is_last_entry = idx == entries.len() - 1;
 
+        let file_color = if entry_path.is_dir() {
+            config::color_to_ansi(arguments.dir_color.as_ref().map_or("blue", |s| s.as_str()))
+        } else {
+            config::color_to_ansi(
+                arguments
+                    .file_color
+                    .as_ref()
+                    .map_or("green", |s| s.as_str()),
+            )
+        };
+
         // Tree characters
         let connector = if is_last_entry {
             "└──"
@@ -66,7 +94,13 @@ fn visit_dir(
         let next_prefix = if is_last_entry { "    " } else { "│   " };
 
         // Print the entry name with the appropriate prefix and connector
-        println!("{}{}{}", prefix, connector, name.to_string_lossy());
+        println!(
+            "{}{}{}{}\x1b[0m",
+            prefix,
+            connector,
+            file_color,
+            name.to_string_lossy()
+        );
 
         // If the entry is a directory, recursively visit it; if it's a file, count it
         if entry_path.is_dir() && fs::read_dir(&entry_path).is_ok() {
