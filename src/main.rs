@@ -12,11 +12,15 @@ static mut DIRS: usize = 0;
 #[derive(Parser)]
 #[command(version = config::LONG_VERSION, about, long_about = None)]
 struct Args {
-    // The path to the file to read
+    /// Root path to display as a tree.
+    #[arg(value_name = "PATH")]
     path: PathBuf,
-    // Whether to show hidden files
-    #[arg(short, long)]
+    /// Include hidden files and directories.
+    #[arg(short, long, help = "Include hidden files and directories")]
     show_hidden: bool,
+    /// Show only directories.
+    #[arg(short, long, help = "Show only directories")]
+    only_dirs: bool,
 }
 
 fn visit_dir(
@@ -42,6 +46,7 @@ fn visit_dir(
         .filter(|e| {
             let name = e.file_name();
             !(!arguments.show_hidden && name.to_string_lossy().starts_with("."))
+                && !(arguments.only_dirs && !e.path().is_dir())
         })
         .collect();
 
