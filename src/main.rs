@@ -18,27 +18,40 @@ struct Args {
     show_hidden: bool,
 }
 
-fn visit_dir(path: &Path, depth: usize, arguments: &Args) -> io::Result<()> {
-    for entry in fs::read_dir(path)? {
-        let entry = entry?;
+fn visit_dir(path: &Path, prefix: &str, _is_last: bool, arguments: &Args) -> io::Result<()> {
+    // Read the directory entries and filter them based on the arguments
+    let entries: Vec<_> = fs::read_dir(path)?
+        .filter_map(|e| e.ok())
+        .filter(|e| {
+            let name = e.file_name();
+            !(!arguments.show_hidden && name.to_string_lossy().starts_with("."))
+        })
+        .collect();
+
+    for (idx, entry) in entries.iter().enumerate() {
+        // Get the path and name of the entry
         let entry_path = entry.path();
         let name = entry.file_name();
+        // Determine if this is the last entry in the directory
+        let is_last_entry = idx == entries.len() - 1;
 
-        if !arguments.show_hidden && name.to_string_lossy().starts_with(".") {
-            continue;
-        }
+        // Tree characters
+        let connector = if is_last_entry {
+            "└──"
+        } else {
+            "├──"
+        };
+        let next_prefix = if is_last_entry { "    " } else { "│   " };
 
-        if entry_path.is_dir() && fs::read_dir(&entry_path).is_err() {
-            continue;
-        }
+        // Print the entry name with the appropriate prefix and connector
+        println!("{}{}{}", prefix, connector, name.to_string_lossy());
 
-        println!("├─{}{}", "─".repeat(depth), name.to_string_lossy());
-
-        if entry_path.is_dir() {
+        // If the entry is a directory, recursively visit it; if it's a file, count it
+        if entry_path.is_dir() && fs::read_dir(&entry_path).is_ok() {
             unsafe { DIRS += 1 };
-            visit_dir(&entry_path, depth + 1, arguments)?;
-        }
-        if entry_path.is_file() {
+            let new_prefix = format!("{}{}", prefix, next_prefix);
+            visit_dir(&entry_path, &new_prefix, is_last_entry, arguments)?;
+        } else if entry_path.is_file() {
             unsafe { FILES += 1 };
         }
     }
@@ -47,9 +60,10 @@ fn visit_dir(path: &Path, depth: usize, arguments: &Args) -> io::Result<()> {
 
 fn main() -> io::Result<()> {
     let args = Args::parse();
-
-    println!(".");
-    visit_dir(Path::new(&args.path), 0, &args)?;
-    println!("\n{} directories, {} files", unsafe { DIRS }, unsafe { FILES });
+    println!("{}:", args.path.display());
+    visit_dir(Path::new(&args.path), "", true, &args)?;
+    println!("\n{} directories, {} files", unsafe { DIRS }, unsafe {
+        FILES
+    });
     Ok(())
 }
