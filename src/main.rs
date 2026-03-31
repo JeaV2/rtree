@@ -76,7 +76,9 @@ fn visit_dir(
 }
 
 fn main() -> io::Result<()> {
+    // Parse command-line arguments
     let args = Args::parse();
+    // Start visiting the directory and print the tree structure
     println!("{}:", args.path.display());
     let mut visited = HashSet::new();
     visit_dir(Path::new(&args.path), "", true, &args, &mut visited)?;
