@@ -6,9 +6,6 @@ use std::path::{Path, PathBuf};
 
 mod config;
 
-static mut FILES: usize = 0;
-static mut DIRS: usize = 0;
-
 #[derive(Parser)]
 #[command(version = config::LONG_VERSION, about, long_about = None)]
 struct Args {
@@ -46,6 +43,8 @@ fn visit_dir(
     _is_last: bool,
     arguments: &Args,
     visited: &mut HashSet<PathBuf>,
+    files: &mut usize,
+    dirs: &mut usize,
 ) -> io::Result<()> {
     // Canonicalize and check if already visited
     let canonical_path = match fs::canonicalize(path) {
@@ -104,11 +103,19 @@ fn visit_dir(
 
         // If the entry is a directory, recursively visit it; if it's a file, count it
         if entry_path.is_dir() && fs::read_dir(&entry_path).is_ok() {
-            unsafe { DIRS += 1 };
+            *dirs += 1;
             let new_prefix = format!("{}{}", prefix, next_prefix);
-            visit_dir(&entry_path, &new_prefix, is_last_entry, arguments, visited)?;
+            visit_dir(
+                &entry_path,
+                &new_prefix,
+                is_last_entry,
+                arguments,
+                visited,
+                files,
+                dirs,
+            )?;
         } else if entry_path.is_file() {
-            unsafe { FILES += 1 };
+            *files += 1;
         }
     }
     Ok(())
@@ -117,12 +124,21 @@ fn visit_dir(
 fn main() -> io::Result<()> {
     // Parse command-line arguments
     let args = Args::parse();
+    // Initialize counters for files and directories
+    let mut files: usize = 0;
+    let mut dirs: usize = 0;
     // Start visiting the directory and print the tree structure
     println!("{}:", args.path.display());
     let mut visited = HashSet::new();
-    visit_dir(Path::new(&args.path), "", true, &args, &mut visited)?;
-    println!("\n{} directories, {} files", unsafe { DIRS }, unsafe {
-        FILES
-    });
+    visit_dir(
+        Path::new(&args.path),
+        "",
+        true,
+        &args,
+        &mut visited,
+        &mut files,
+        &mut dirs,
+    )?;
+    println!("\n{} directories, {} files", dirs, files);
     Ok(())
 }
