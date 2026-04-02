@@ -43,8 +43,7 @@ fn visit_dir(
     _is_last: bool,
     arguments: &Args,
     visited: &mut HashSet<PathBuf>,
-    files: &mut usize,
-    dirs: &mut usize,
+    files_dirs: &mut (usize, usize),
 ) -> io::Result<()> {
     // Canonicalize and check if already visited
     let canonical_path = match fs::canonicalize(path) {
@@ -103,7 +102,7 @@ fn visit_dir(
 
         // If the entry is a directory, recursively visit it; if it's a file, count it
         if entry_path.is_dir() && fs::read_dir(&entry_path).is_ok() {
-            *dirs += 1;
+            files_dirs.1 += 1;
             let new_prefix = format!("{}{}", prefix, next_prefix);
             visit_dir(
                 &entry_path,
@@ -111,11 +110,10 @@ fn visit_dir(
                 is_last_entry,
                 arguments,
                 visited,
-                files,
-                dirs,
+                files_dirs,
             )?;
         } else if entry_path.is_file() {
-            *files += 1;
+            files_dirs.0 += 1;
         }
     }
     Ok(())
@@ -125,8 +123,7 @@ fn main() -> io::Result<()> {
     // Parse command-line arguments
     let args = Args::parse();
     // Initialize counters for files and directories
-    let mut files: usize = 0;
-    let mut dirs: usize = 0;
+    let mut files_dirs: ( usize , usize ) = (0 , 0);
     // Start visiting the directory and print the tree structure
     println!("{}:", args.path.display());
     let mut visited = HashSet::new();
@@ -136,9 +133,8 @@ fn main() -> io::Result<()> {
         true,
         &args,
         &mut visited,
-        &mut files,
-        &mut dirs,
+        &mut files_dirs,
     )?;
-    println!("\n{} directories, {} files", dirs, files);
+    print!("\n{} directories, {} files\n", files_dirs.1, files_dirs.0);
     Ok(())
 }
