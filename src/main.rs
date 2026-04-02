@@ -6,42 +6,11 @@ use std::path::{Path, PathBuf};
 
 mod config;
 
-#[derive(Parser)]
-#[command(version = config::LONG_VERSION, about, long_about = None)]
-struct Args {
-    #[arg(
-        value_name = "PATH",
-        default_value = ".",
-        help = "The directory path to display"
-    )]
-    path: PathBuf,
-
-    #[arg(short, long, help = "Include hidden files and directories")]
-    show_hidden: bool,
-
-    #[arg(short, long, help = "Show only directories")]
-    only_dirs: bool,
-
-    #[arg(
-        short,
-        long,
-        help = "Set directory color (e.g., \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"magenta/purple\", \"cyan\", \"white\")"
-    )]
-    dir_color: Option<String>,
-
-    #[arg(
-        short,
-        long,
-        help = "Set file color (e.g., \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"magenta/purple\", \"cyan\", \"white\")"
-    )]
-    file_color: Option<String>,
-}
-
 fn visit_dir(
     path: &Path,
     prefix: &str,
     _is_last: bool,
-    arguments: &Args,
+    arguments: &config::Args,
     visited: &mut HashSet<PathBuf>,
     files_dirs: &mut (usize, usize),
 ) -> io::Result<()> {
@@ -121,7 +90,7 @@ fn visit_dir(
 
 fn main() -> io::Result<()> {
     // Parse command-line arguments
-    let args = Args::parse();
+    let args = config::Args::parse();
     // Initialize counters for files and directories
     let mut files_dirs: ( usize , usize ) = (0 , 0);
     // Start visiting the directory and print the tree structure
