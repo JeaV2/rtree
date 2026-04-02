@@ -20,9 +20,8 @@ target
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# vscode/GitHub files
+# vscode files
 .vscode/
-.github/
 
 # Personal exclusions
 # scratchpad are my personal notes, and test/experiment code snippets, which I don't want to commit to the repo.

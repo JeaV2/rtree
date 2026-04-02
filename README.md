@@ -5,10 +5,12 @@ A Directory listing program written in Rust, inspired by the Unix `tree` command
 
 ## Description
 
-This is a Rust implementation of a directory listing program that displays the structure of a directory tree. It provides a visual representation of the directory hierarchy, making it easier to understand the organization of files and folders.
+`rtree` is a command-line tool that displays the directory structure of a specified path in a tree-like format. it offers various options for customizing the output, such as showing hidden files, displaying only directories, and coloring the output.
 
 ## Demo
-A demo of the program will be provided here once the project is ready for distribution. Please check back later for updates.
+Here is a demo of `rtree` in action:
+
+![A demo of rtree with the default settings](./.github/media/demo.png)
 
 ## Prerequisites
 
@@ -24,7 +26,7 @@ Note: Windows support is not planned for the initial release, but may be added i
 
 Currently, the project is in development, installation instructions will be provided here once the project is ready for distribution.
 
-To run it in its current state, you can clone the repository and run build it using Cargo:
+To run it in its current state, you can clone the repository and build it using Cargo:
 
 ```bash
 git clone https://github.com/Jeav2/rtree.git
@@ -34,24 +36,43 @@ cargo build --release
 After building, you can run the program using:
 
 ```bash
-./target/release/rtree [options] [starting_directory]
+./target/release/rtree [starting_directory] [options]
 ``` 
 
 ## Usage
 
-Usage instructions will be provided here when the features are implemented.
+`rtree [OPTIONS] [PATH]`
+
+### Arguments
+
+- `PATH`: The starting directory to display. If not provided, it defaults to the current working directory.
+
+### Options
+| Short option | Long option     | Description                          |
+|--------------|-----------------|--------------------------------------|
+| `-s`         | `--show-hidden` | Include hidden files and directories |
+| `-o`         | `--only-dirs`   | Show only directories                |
+| `-d`         | `--dir-color`   | Set directory color                  |
+| `-f`         | `--file-color`  | Set file color                       |
+| `-h`         | `--help`        | Print help                           |
+| `-V`         | `--version`     | Print version                        |
+
+#### Colors
+
+Colors can be specified using named colors.
+All available colors are listed in the [colors module](src/config/colors.rs) and include: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`.
 
 ## Features
 
 note: This is for a school project, so I am planing on implementing the "Must have" and "Should have" features, when the project is handed in and the "Could have" features are not implemented yet I will add those in my own time.
 
-| Must have                                                                      | Should have                                              | Could have                                                                                        | Won't have |
-|--------------------------------------------------------------------------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------|------------|
-| The program displays a tree-like structure of directories and files (in color) | Clickable terminal links to open directories and files   | Commandline argument for specifying the file explorer to use when opening links                   |
-| Command-line argument for turning color on/off                                 | Command-line argument for turning links on/off           | Command-line argument for exporting the directory structure to a file (e.g., JSON, XML, TXT, etc) |
-| Command-line argument for only displaying directories                          | Configuration file support (toml file)                   |                                                                                                   |
-| Command-line argument for specifying starting directory                        |                                                          |                                                                                                   |
-| Command-line argument for displaying hidden files                              |                                                          |                                                                                                   |
+| Must have                                                                      | Should have                                              | Could have                                                                                        | Won't have                                                    |
+|--------------------------------------------------------------------------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| The program displays a tree-like structure of directories and files (in color) | Clickable terminal links to open directories and files   | Commandline argument for specifying the file explorer to use when opening links                   | Windows support (initial release will be Linux and macOS only)|
+| Command-line argument for turning color on/off                                 | Command-line argument for turning links on/off           | Command-line argument for exporting the directory structure to a file (e.g., JSON, XML, TXT, etc) |                                                               |
+| Command-line argument for only displaying directories                          | Configuration file support (toml file)                   |                                                                                                   |                                                               |
+| Command-line argument for specifying starting directory                        |                                                          |                                                                                                   |                                                               |
+| Command-line argument for displaying hidden files                              |                                                          |                                                                                                   |                                                               |
 
 ## Contributing
 
