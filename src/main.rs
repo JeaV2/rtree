@@ -14,7 +14,17 @@ fn visit_dir(
     visited: &mut HashSet<PathBuf>,
     files_dirs: &mut (usize, usize),
 ) -> io::Result<()> {
-    // Canonicalize and check if already visited
+    // Resolve metadata without following symlinks.
+    let metadata = match fs::symlink_metadata(path) {
+        Ok(m) => m,
+        Err(_) => return Ok(()),
+    };
+
+    if !metadata.is_dir() {
+        return Ok(());
+    }
+
+    // Canonicalize real directories for cycle detection only.
     let canonical_path = match fs::canonicalize(path) {
         Ok(p) => p,
         Err(_) => return Ok(()),
@@ -29,8 +39,12 @@ fn visit_dir(
         .filter_map(|e| e.ok())
         .filter(|e| {
             let name = e.file_name();
+            let file_type = match e.file_type() {
+                Ok(t) => t,
+                Err(_) => return false,
+            };
             !(!arguments.show_hidden && name.to_string_lossy().starts_with("."))
-                && !(arguments.only_dirs && !e.path().is_dir())
+                && !(arguments.only_dirs && !file_type.is_dir())
         })
         .collect();
 
@@ -38,10 +52,14 @@ fn visit_dir(
         // Get the path and name of the entry
         let entry_path = entry.path();
         let name = entry.file_name();
+        let entry_file_type = match entry.file_type() {
+            Ok(m) => m,
+            Err(_) => continue,
+        };
         // Determine if this is the last entry in the directory
         let is_last_entry = idx == entries.len() - 1;
 
-        let file_color = if entry_path.is_dir() {
+        let file_color = if entry_file_type.is_dir() {
             config::color_to_ansi(arguments.dir_color.as_ref().map_or("blue", |s| s.as_str()))
         } else {
             config::color_to_ansi(
@@ -70,18 +88,20 @@ fn visit_dir(
         );
 
         // If the entry is a directory, recursively visit it; if it's a file, count it
-        if entry_path.is_dir() && fs::read_dir(&entry_path).is_ok() {
-            files_dirs.1 += 1;
-            let new_prefix = format!("{}{}", prefix, next_prefix);
-            visit_dir(
-                &entry_path,
-                &new_prefix,
-                is_last_entry,
-                arguments,
-                visited,
-                files_dirs,
-            )?;
-        } else if entry_path.is_file() {
+        if entry_file_type.is_dir() {
+            if fs::read_dir(&entry_path).is_ok() {
+                files_dirs.1 += 1;
+                let new_prefix = format!("{}{}", prefix, next_prefix);
+                visit_dir(
+                    &entry_path,
+                    &new_prefix,
+                    is_last_entry,
+                    arguments,
+                    visited,
+                    files_dirs,
+                )?;
+            }
+        } else if entry_file_type.is_file() {
             files_dirs.0 += 1;
         }
     }
