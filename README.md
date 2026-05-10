@@ -62,6 +62,11 @@ After building, you can run the program using:
 Colors can be specified using named colors.
 All available colors are listed in the [colors module](src/config/colors.rs) and include: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`.
 
+### Configuration file
+In addition to command-line options, `rtree` also supports configuration through a TOML file. This allows you to set default options and colors without having to specify them every time you run the program. 
+A default configuration file will be created in your config directory (e.g., `~/.config/rtree/config.toml` or `$XDG_CONFIG_HOME/<project_path>`) when you run the program for the first time. You can edit this file to customize your settings. 
+Command-line options will override the settings in the configuration file when both are provided.
+
 ## Features
 
 note: This is for a school project, so I am planing on implementing the "Must have" and "Should have" features, when the project is handed in and the "Could have" features are not implemented yet I will add those in my own time.
