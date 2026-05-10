@@ -83,7 +83,12 @@ fn visit_dir(
         let is_last_entry = idx == entries.len() - 1;
 
         let file_color = if entry_file_type.is_dir() {
-            config::color_to_ansi(arguments.dir_color.as_ref().map_or(cfg.dir_color.as_deref().unwrap_or("blue"), |s| s.as_str()))
+            config::color_to_ansi(
+                arguments
+                    .dir_color
+                    .as_ref()
+                    .map_or(cfg.dir_color.as_deref().unwrap_or("blue"), |s| s.as_str()),
+            )
         } else {
             config::color_to_ansi(
                 arguments
@@ -135,7 +140,7 @@ fn main() -> io::Result<()> {
     // Parse command-line arguments
     let args = config::Args::parse();
     // Initialize counters for files and directories
-    let mut files_dirs: ( usize , usize ) = (0 , 0);
+    let mut files_dirs: (usize, usize) = (0, 0);
     // Start visiting the directory and print the tree structure
     println!("{}:", args.path.display());
     let mut visited = HashSet::new();
