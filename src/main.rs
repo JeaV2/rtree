@@ -1,8 +1,27 @@
 use clap::Parser;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+
+#[derive(Serialize, Deserialize)]
+struct Config {
+    dir_color: Option<String>,
+    file_color: Option<String>,
+    show_hidden: bool,
+    only_dirs: bool,
+}
+impl ::std::default::Default for Config {
+    fn default() -> Self {
+        Self {
+            dir_color: Some("blue".to_string()),
+            file_color: Some("green".to_string()),
+            show_hidden: false,
+            only_dirs: false,
+        }
+    }
+}
 
 mod config;
 
@@ -14,6 +33,8 @@ fn visit_dir(
     visited: &mut HashSet<PathBuf>,
     files_dirs: &mut (usize, usize),
 ) -> io::Result<()> {
+    // Load configuration file
+    let cfg: Config = confy::load("rtree", "rtree").unwrap_or_default();
     // Resolve metadata without following symlinks.
     let metadata = match fs::symlink_metadata(path) {
         Ok(m) => m,
@@ -43,8 +64,10 @@ fn visit_dir(
                 Ok(t) => t,
                 Err(_) => return false,
             };
-            !(!arguments.show_hidden && name.to_string_lossy().starts_with("."))
-                && !(arguments.only_dirs && !file_type.is_dir())
+            let show_hidden = arguments.show_hidden || cfg.show_hidden;
+            let only_dirs = arguments.only_dirs || cfg.only_dirs;
+            !(!show_hidden && name.to_string_lossy().starts_with("."))
+                && !(only_dirs && !file_type.is_dir())
         })
         .collect();
 
@@ -60,13 +83,13 @@ fn visit_dir(
         let is_last_entry = idx == entries.len() - 1;
 
         let file_color = if entry_file_type.is_dir() {
-            config::color_to_ansi(arguments.dir_color.as_ref().map_or("blue", |s| s.as_str()))
+            config::color_to_ansi(arguments.dir_color.as_ref().map_or(cfg.dir_color.as_deref().unwrap_or("blue"), |s| s.as_str()))
         } else {
             config::color_to_ansi(
                 arguments
                     .file_color
                     .as_ref()
-                    .map_or("green", |s| s.as_str()),
+                    .map_or(cfg.file_color.as_deref().unwrap_or("green"), |s| s.as_str()),
             )
         };
 

@@ -5,6 +5,7 @@ use crate::config;
 
 #[derive(Parser)]
 #[command(version = config::LONG_VERSION, about, long_about = None)]
+#[command(after_help = "You can also set these options in a configuration file located at \x1b[40m`~/.config/rtree/rtree.toml`\x1b[0m. Command-line arguments will override the configuration file settings.")]
 pub struct Args {
     #[arg(
         value_name = "PATH",
