@@ -73,3 +73,38 @@ impl ::std::default::Default for Config {
         }
     }
 }
+// Combined resolved options from command-line arguments and config file.
+pub struct ResolvedOptions {
+    pub show_hidden: bool,
+    pub only_dirs: bool,
+    pub clickable: bool,
+    pub no_markup: bool,
+    pub dir_color: String,
+    pub file_color: String,
+}
+
+impl ResolvedOptions {
+    pub fn from_args_and_cfg(args: &config::Args, cfg: &config::options::Config) -> Self {
+        let dir_color = args
+            .dir_color
+            .as_ref()
+            .map(|s| s.clone())
+            .or_else(|| cfg.dir_color.clone())
+            .unwrap_or_else(|| "blue".to_string());
+        let file_color = args
+            .file_color
+            .as_ref()
+            .map(|s| s.clone())
+            .or_else(|| cfg.file_color.clone())
+            .unwrap_or_else(|| "green".to_string());
+
+        ResolvedOptions {
+            show_hidden: args.show_hidden || cfg.show_hidden,
+            only_dirs: args.only_dirs || cfg.only_dirs,
+            clickable: args.clickable || cfg.clickable,
+            no_markup: args.no_markup || cfg.no_markup,
+            dir_color,
+            file_color,
+        }
+    }
+}

@@ -1,5 +1,5 @@
-pub mod args;
+pub mod options;
 pub mod version;
 
-pub use args::*;
+pub use options::*;
 pub use version::*;

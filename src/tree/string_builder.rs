@@ -5,7 +5,7 @@ pub fn build_string(
     prefix: &str,
     connector: &str,
     file_color: &str,
-    name: std::borrow::Cow<str>,
+    name: String,
     no_markup: bool,
     clickable: bool,
     path: &Path,
