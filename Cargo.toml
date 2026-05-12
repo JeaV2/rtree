@@ -5,7 +5,6 @@ description = "A Directory listing program written in Rust, inspired by the Unix
 edition = "2024"
 readme = "README.md"
 license = "Apache-2.0"
-license-file = "LICENSE"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
