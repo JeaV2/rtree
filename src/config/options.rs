@@ -68,7 +68,7 @@ impl ::std::default::Default for Config {
             file_color: Some("green".to_string()),
             show_hidden: false,
             only_dirs: false,
-            clickable: true,
+            clickable: false,
             no_markup: false,
         }
     }

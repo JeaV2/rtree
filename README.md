@@ -53,9 +53,11 @@ After building, you can run the program using:
 | `-s`         | `--show-hidden` | Include hidden files and directories |
 | `-o`         | `--only-dirs`   | Show only directories                |
 | `-d`         | `--dir-color`   | Set directory color                  |
+| `-c`         | `--dir-color`   | Set directory color                  |
 | `-f`         | `--file-color`  | Set file color                       |
 | `-h`         | `--help`        | Print help                           |
 | `-V`         | `--version`     | Print version                        |
+
 
 #### Colors
 
