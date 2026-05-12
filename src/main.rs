@@ -5,6 +5,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 mod config;
+mod tree;
 
 fn visit_dir(
     path: &Path,
@@ -64,14 +65,14 @@ fn visit_dir(
         let is_last_entry = idx == entries.len() - 1;
 
         let file_color = if entry_file_type.is_dir() {
-            config::color_to_ansi(
+            tree::color_to_ansi(
                 arguments
                     .dir_color
                     .as_ref()
                     .map_or(cfg.dir_color.as_deref().unwrap_or("blue"), |s| s.as_str()),
             )
         } else {
-            config::color_to_ansi(
+            tree::color_to_ansi(
                 arguments
                     .file_color
                     .as_ref()
@@ -92,7 +93,7 @@ fn visit_dir(
         let no_markup = arguments.no_markup || cfg.no_markup;
         println!(
             "{}",
-            config::build_string(
+            tree::build_string(
                 prefix,
                 connector,
                 file_color,
