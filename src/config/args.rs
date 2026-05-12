@@ -35,4 +35,11 @@ pub struct Args {
         help = "Set file color (e.g., \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"magenta/purple\", \"cyan\", \"white\")"
     )]
     pub file_color: Option<String>,
+
+    #[arg(
+        short,
+        long,
+        help = "Disables colors."
+    )]
+    pub no_color: bool,
 }

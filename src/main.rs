@@ -11,6 +11,8 @@ struct Config {
     file_color: Option<String>,
     show_hidden: bool,
     only_dirs: bool,
+    clickable: bool,
+    no_color: bool,
 }
 impl ::std::default::Default for Config {
     fn default() -> Self {
@@ -19,6 +21,8 @@ impl ::std::default::Default for Config {
             file_color: Some("green".to_string()),
             show_hidden: false,
             only_dirs: false,
+            clickable: true,
+            no_color: false,
         }
     }
 }
@@ -108,11 +112,8 @@ fn visit_dir(
 
         // Print the entry name with the appropriate prefix and connector
         println!(
-            "{}{}{}{}\x1b[0m",
-            prefix,
-            connector,
-            file_color,
-            name.to_string_lossy()
+            "{}",
+            config::build_string(prefix, connector, file_color, name.to_string_lossy(), arguments.no_color)
         );
 
         // If the entry is a directory, recursively visit it; if it's a file, count it
