@@ -11,4 +11,5 @@ license-file = "LICENSE"
 clap = { version = "4.0", features = ["derive"] }
 serde = { version = "1.0.152", features = ["derive"] }
 confy = "^0.6"
+terminal-link = "0.1.0"
 

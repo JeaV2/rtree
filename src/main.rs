@@ -12,7 +12,7 @@ struct Config {
     show_hidden: bool,
     only_dirs: bool,
     clickable: bool,
-    no_color: bool,
+    no_markup: bool,
 }
 impl ::std::default::Default for Config {
     fn default() -> Self {
@@ -22,7 +22,7 @@ impl ::std::default::Default for Config {
             show_hidden: false,
             only_dirs: false,
             clickable: true,
-            no_color: false,
+            no_markup: false,
         }
     }
 }
@@ -111,9 +111,19 @@ fn visit_dir(
         let next_prefix = if is_last_entry { "    " } else { "│   " };
 
         // Print the entry name with the appropriate prefix and connector
+        let clickable = arguments.clickable || cfg.clickable;
+        let no_markup = arguments.no_markup || cfg.no_markup;
         println!(
             "{}",
-            config::build_string(prefix, connector, file_color, name.to_string_lossy(), arguments.no_color)
+            config::build_string(
+                prefix,
+                connector,
+                file_color,
+                name.to_string_lossy(),
+                no_markup,
+                clickable,
+                path
+            )
         );
 
         // If the entry is a directory, recursively visit it; if it's a file, count it

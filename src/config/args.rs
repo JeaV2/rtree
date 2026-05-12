@@ -39,7 +39,14 @@ pub struct Args {
     #[arg(
         short,
         long,
-        help = "Disables colors."
+        help = "Makes it so files are files and directories are clickable. When clicked, it will open the file or directory in the default file manager or associated application."
     )]
-    pub no_color: bool,
+    pub clickable: bool,
+
+    #[arg(
+        short,
+        long,
+        help = "Disables all ANSI color codes and terminal links, resulting in plain text output."
+    )]
+    pub no_markup: bool,
 }
