@@ -10,7 +10,6 @@ mod tree;
 fn visit_dir(
     path: &Path,
     prefix: &str,
-    _is_last: bool,
     arguments: &config::Args,
     visited: &mut HashSet<PathBuf>,
     files_dirs: &mut (usize, usize),
@@ -112,7 +111,6 @@ fn visit_dir(
                 visit_dir(
                     &entry_path,
                     &new_prefix,
-                    is_last_entry,
                     arguments,
                     visited,
                     files_dirs,
@@ -136,7 +134,6 @@ fn main() -> io::Result<()> {
     visit_dir(
         Path::new(&args.path),
         "",
-        true,
         &args,
         &mut visited,
         &mut files_dirs,
