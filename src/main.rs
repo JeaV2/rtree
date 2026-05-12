@@ -1,31 +1,8 @@
 use clap::Parser;
-use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
-
-#[derive(Serialize, Deserialize)]
-struct Config {
-    dir_color: Option<String>,
-    file_color: Option<String>,
-    show_hidden: bool,
-    only_dirs: bool,
-    clickable: bool,
-    no_markup: bool,
-}
-impl ::std::default::Default for Config {
-    fn default() -> Self {
-        Self {
-            dir_color: Some("blue".to_string()),
-            file_color: Some("green".to_string()),
-            show_hidden: false,
-            only_dirs: false,
-            clickable: true,
-            no_markup: false,
-        }
-    }
-}
 
 mod config;
 
@@ -38,7 +15,7 @@ fn visit_dir(
     files_dirs: &mut (usize, usize),
 ) -> io::Result<()> {
     // Load configuration file
-    let cfg: Config = confy::load("rtree", "rtree").unwrap_or_default();
+    let cfg: config::args::Config = confy::load("rtree", "rtree").unwrap_or_default();
     // Resolve metadata without following symlinks.
     let metadata = match fs::symlink_metadata(path) {
         Ok(m) => m,
