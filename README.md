@@ -48,15 +48,16 @@ After building, you can run the program using:
 - `PATH`: The starting directory to display. If not provided, it defaults to the current working directory.
 
 ### Options
-| Short option | Long option     | Description                          |
-|--------------|-----------------|--------------------------------------|
-| `-s`         | `--show-hidden` | Include hidden files and directories |
-| `-o`         | `--only-dirs`   | Show only directories                |
-| `-d`         | `--dir-color`   | Set directory color                  |
-| `-c`         | `--dir-color`   | Set directory color                  |
-| `-f`         | `--file-color`  | Set file color                       |
-| `-h`         | `--help`        | Print help                           |
-| `-V`         | `--version`     | Print version                        |
+| Short option | Long option     | Description                                 |
+|--------------|-----------------|---------------------------------------------|
+| `-s`         | `--show-hidden` | Include hidden files and directories        |
+| `-o`         | `--only-dirs`   | Show only directories                       |
+| `-d`         | `--dir-color`   | Set directory color                         |
+| `-c`         | `--clickable`   | Make files and directories clickable        |
+| `-n`         | `--no-markup`   | Disable ANSI color codes and terminal links |
+| `-f`         | `--file-color`  | Set file color                              |
+| `-h`         | `--help`        | Print help                                  |
+| `-V`         | `--version`     | Print version                               |
 
 
 #### Colors
