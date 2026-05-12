@@ -87,14 +87,12 @@ impl ResolvedOptions {
     pub fn from_args_and_cfg(args: &config::Args, cfg: &config::options::Config) -> Self {
         let dir_color = args
             .dir_color
-            .as_ref()
-            .map(|s| s.clone())
+            .clone()
             .or_else(|| cfg.dir_color.clone())
             .unwrap_or_else(|| "blue".to_string());
         let file_color = args
             .file_color
-            .as_ref()
-            .map(|s| s.clone())
+            .clone()
             .or_else(|| cfg.file_color.clone())
             .unwrap_or_else(|| "green".to_string());
 
